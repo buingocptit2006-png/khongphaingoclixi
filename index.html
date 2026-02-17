@@ -2,7 +2,6 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vòng Quay Lì Xì 2026</title>
 
 <style>
@@ -12,93 +11,43 @@ body{
     text-align:center;
     background:linear-gradient(to bottom,#8B0000,#ff0000);
     color:#FFD700;
-    overflow-x:hidden;
 }
 
-/* TIÊU ĐỀ */
 h1{
-    margin-top:20px;
-    font-size:28px;
-    text-shadow:0 0 15px gold;
+    margin-top:30px;
+    font-size:42px;
+    text-shadow:0 0 20px gold;
 }
 
-/* CÂU ĐỐI */
-.cau-doi{
-    position:fixed;
-    top:100px;
-    width:60px;
-    background:#b30000;
-    color:gold;
-    padding:10px 5px;
-    font-weight:bold;
-    writing-mode:vertical-rl;
-    text-orientation:upright;
-    border:3px solid gold;
-    border-radius:8px;
+canvas{
+    margin-top:40px;
 }
 
-.left-doi{ left:5px; }
-.right-doi{ right:5px; }
-
-/* PHÁO TREO */
-.phao{
-    position:fixed;
-    top:50px;
-    width:20px;
-    height:150px;
-    background:red;
-    border-radius:10px;
-    box-shadow:0 0 15px gold;
-}
-.phao.left{ left:80px; }
-.phao.right{ right:80px; }
-
-.phao::after{
-    content:"";
-    position:absolute;
-    bottom:-15px;
-    left:50%;
-    transform:translateX(-50%);
-    width:4px;
-    height:20px;
-    background:gold;
-}
-
-/* MŨI TÊN */
 .pointer{
     width:0;
     height:0;
-    border-left:15px solid transparent;
-    border-right:15px solid transparent;
-    border-top:25px solid gold;
-    margin:10px auto;
+    border-left:20px solid transparent;
+    border-right:20px solid transparent;
+    border-top:40px solid gold; /* chỉ xuống */
+    margin:auto;
 }
 
-/* CANVAS */
-canvas{
-    width:90vw;
-    max-width:380px;
-    height:90vw;
-    max-height:380px;
-}
-
-/* NÚT */
 button{
-    margin-top:20px;
-    padding:12px 35px;
-    font-size:18px;
+    margin-top:30px;
+    padding:15px 40px;
+    font-size:20px;
     border:none;
-    border-radius:8px;
+    border-radius:10px;
     background:gold;
     color:red;
     font-weight:bold;
-    box-shadow:0 0 15px gold;
+    cursor:pointer;
+    box-shadow:0 0 20px gold;
 }
 
-/* KẾT QUẢ */
 .result{
-    margin-top:20px;
-    font-size:22px;
+    margin-top:30px;
+    font-size:28px;
     min-height:40px;
 }
 </style>
@@ -107,21 +56,8 @@ button{
 
 <h1>🧧 Vòng Quay Lì Xì 2026 🧧</h1>
 
-<div class="cau-doi left-doi">
-Chúc Tết An Khang<br>
-Phát Tài Phát Lộc
-</div>
-
-<div class="cau-doi right-doi">
-Xuân Sang Vạn Sự<br>
-Như Ý Cát Tường
-</div>
-
-<div class="phao left"></div>
-<div class="phao right"></div>
-
 <div class="pointer"></div>
-<canvas id="wheel" width="400" height="400"></canvas>
+<canvas id="wheel" width="420" height="420"></canvas>
 
 <br>
 <button onclick="spin()">QUAY NGAY</button>
@@ -145,12 +81,13 @@ const ctx = canvas.getContext("2d");
 let rotation = 0;
 let spinning = false;
 
-const center = 200;
-const radius = 180;
+const center = 210;
+const radius = 200;
 const sliceAngle = 2*Math.PI/prizes.length;
 
 function drawWheel(){
     for(let i=0;i<prizes.length;i++){
+
         const start = rotation + i*sliceAngle;
         const end = start + sliceAngle;
 
@@ -161,21 +98,19 @@ function drawWheel(){
         ctx.fillStyle = i%2==0 ? "#FFD700" : "#ff9999";
         ctx.fill();
 
-        // TEXT LUÔN NẰM NGANG
         ctx.save();
         ctx.translate(center,center);
         ctx.rotate(start + sliceAngle/2);
-        ctx.rotate(-rotation);
-        ctx.textAlign="center";
+        ctx.textAlign="right";
         ctx.fillStyle="red";
-        ctx.font="bold 20px Arial";
-        ctx.fillText(prizes[i].value, 0, -radius+40);
+        ctx.font="bold 18px Arial";
+        ctx.fillText(prizes[i].value, radius-20, 5);
         ctx.restore();
     }
 
     ctx.beginPath();
     ctx.arc(center,center,radius,0,2*Math.PI);
-    ctx.lineWidth=8;
+    ctx.lineWidth=10;
     ctx.strokeStyle="gold";
     ctx.stroke();
 }
@@ -194,34 +129,81 @@ function angleOf(index){
 }
 
 function spin(){
+
     if(spinning) return;
     spinning = true;
+
     document.getElementById("result").innerHTML="";
 
     let result = getRandomPrize();
     let realIndex = prizes.findIndex(p=>p.value===result);
 
-    let target = angleOf(realIndex);
-    let spinAmount = 6*2*Math.PI + target - (rotation % (2*Math.PI));
+    if(result === "5.000đ"){
 
-    animateSpin(rotation, spinAmount, 4000, () => {
-        document.getElementById("result").innerHTML =
-            "🎉 Bạn nhận được: <b>"+result+"</b>";
-        spinning = false;
-    });
+        let nearIndex = prizes.findIndex(p=>p.value==="200.000đ");
+
+        let targetNear = angleOf(nearIndex);
+        let finalAngle = angleOf(realIndex);
+
+        let firstSpin = 6*2*Math.PI + targetNear - (rotation % (2*Math.PI));
+
+        animateSpin(rotation, firstSpin, 3000, () => {
+
+            let backSpin = finalAngle - (rotation % (2*Math.PI));
+
+            animateSpin(rotation, backSpin, 800, () => {
+                document.getElementById("result").innerHTML =
+                    "🎉 Bạn nhận được: <b>"+result+"</b>";
+                spinning = false;
+            });
+
+        });
+
+    } else {
+
+        let target = angleOf(realIndex);
+        let spinAmount = 6*2*Math.PI + target - (rotation % (2*Math.PI));
+
+        animateSpin(rotation, spinAmount, 4000, () => {
+            document.getElementById("result").innerHTML =
+                "🎉 Bạn nhận được: <b>"+result+"</b>";
+            spinning = false;
+        });
+    }
 }
 
 function animateSpin(start, amount, duration, callback){
-    let startTime=null;
-    function animate(time){
-        if(!startTime) startTime=time;
-        let progress=time-startTime;
-        let percent=progress/duration;
 
-        if(percent<1){
-            rotation=start+amount*(1-Math.pow(1-percent,3));
+    let startTime = null;
+
+    function animate(time){
+        if(!startTime) startTime = time;
+        let progress = time - startTime;
+        let percent = progress/duration;
+
+        if(percent < 1){
+            rotation = start + amount * easeOut(percent);
             ctx.clearRect(0,0,canvas.width,canvas.height);
             drawWheel();
             requestAnimationFrame(animate);
-        }else{
-            rotation
+        } else {
+            rotation = start + amount;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            drawWheel();
+            callback();
+        }
+    }
+
+    requestAnimationFrame(animate);
+}
+
+function easeOut(t){
+    return 1 - Math.pow(1-t,3);
+}
+
+drawWheel();
+
+</script>
+
+</body>
+</html>
